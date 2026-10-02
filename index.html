@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7b1422">
+<meta name="description" content="A little vintage red-and-pink love story.">
+<title>Our Little Love Story ♡</title>
+<style>
+:root{--wine:#7b1422;--red:#a32937;--rose:#f5dadd;--cream:#fff7f2;--ink:#5c1721}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Georgia,'Times New Roman',serif;background:radial-gradient(circle at 15% 10%,#fff4f0 0 8%,transparent 32%),linear-gradient(135deg,#f8e7e5,#eac1c5 48%,#f9eeea);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background-image:repeating-linear-gradient(45deg,transparent 0 12px,#fff 12px 14px),repeating-linear-gradient(-45deg,transparent 0 12px,#fff 12px 14px);mask-image:linear-gradient(to bottom,black,transparent 80%)}
+header{text-align:center;padding:28px 16px 14px;position:relative}
+.eyebrow{font:700 11px/1.4 system-ui,sans-serif;letter-spacing:.25em;text-transform:uppercase;color:#8e3440}
+h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:400;font-style:italic;margin:8px 0 5px;color:var(--wine)}
+.subtitle{margin:0;font-size:1rem;color:#8c4750}
+main{width:min(1100px,calc(100% - 28px));margin:0 auto 26px;position:relative}
+.frame{position:relative;background:#fff8f5;border:1px solid rgba(123,20,34,.24);border-radius:18px;padding:10px;box-shadow:0 20px 55px #69101f2c,0 3px 0 #fff9f5 inset}
+.frame:before{content:"";position:absolute;inset:5px;border:1px solid #d7a2a5;border-radius:13px;pointer-events:none;z-index:1}
+.page-wrap{aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden;border-radius:10px;background:#f4dfe0;position:relative}
+#pageImage{display:block;width:100%;height:100%;object-fit:contain;transition:opacity .18s ease}
+#pageImage.changing{opacity:.25}
+.page-count{position:absolute;right:22px;bottom:20px;background:#fff8f2e8;border:1px solid #d7a2a5;border-radius:30px;padding:7px 12px;font:600 12px system-ui,sans-serif;color:var(--wine)}
+.controls{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;padding:17px 8px 4px}
+button{font:600 14px system-ui,sans-serif;cursor:pointer;border:1px solid #a85661;color:var(--wine);background:#fff8f4;border-radius:999px;padding:11px 17px;box-shadow:0 3px 0 #d9a7aa;transition:transform .15s,background .15s}
+button:hover{background:#ffe9e8;transform:translateY(-1px)}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #d9a7aa}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.dots{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;padding:14px 8px 2px}
+.dot{width:9px;height:9px;border:0;padding:0;background:#c9878f;box-shadow:none}
+.dot[aria-current="true"]{background:var(--wine);outline:3px solid #ffffffaa}
+.hint{text-align:center;color:#87535a;font:12px system-ui,sans-serif;margin:14px 0 0}
+footer{text-align:center;padding:0 16px 28px;color:#87424c;font-size:14px}
+footer span{color:#a32937}
+.heart{position:fixed;bottom:-35px;z-index:3;pointer-events:none;animation:floatUp 6s linear forwards;opacity:.7}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:.75}100%{transform:translateY(-110vh) rotate(35deg);opacity:0}}
+@media(max-width:600px){header{padding-top:22px}.frame{padding:6px;border-radius:12px}.frame:before{inset:3px;border-radius:9px}.page-wrap{aspect-ratio:4/3}.page-count{right:12px;bottom:12px;padding:5px 9px}.controls{gap:8px;padding-top:13px}button{padding:10px 13px;font-size:12px}.hint{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">a little something made with love</div>
+  <h1>Our Little Love Story <span aria-hidden="true">♡</span></h1>
+  <p class="subtitle">Ten pages, a thousand little feelings.</p>
+</header>
+<main>
+  <section class="frame" aria-label="Love story presentation">
+    <div class="page-wrap">
+      <img id="pageImage" src="assets/page-01.jpg" alt="Page 1 of our love story" fetchpriority="high">
+      <div class="page-count" id="count" aria-live="polite">01 / 10</div>
+    </div>
+  </section>
+  <nav class="controls" aria-label="Page controls">
+    <button id="prev" type="button" aria-label="Previous page">← Previous</button>
+    <button id="surprise" type="button">A little surprise ♡</button>
+    <button id="next" type="button" aria-label="Next page">Next →</button>
+  </nav>
+  <div class="dots" id="dots" aria-label="Jump to a page"></div>
+  <p class="hint">Tip: use the arrows, tap the dots, or swipe on your phone.</p>
+</main>
+<footer>Made from little moments and a lot of love <span>♥</span></footer>
+<script>
+(() => {
+  const total = 10;
+  let current = 0;
+  const img = document.getElementById('pageImage');
+  const count = document.getElementById('count');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const dots = document.getElementById('dots');
+  const surprise = document.getElementById('surprise');
+  const pad = n => String(n).padStart(2,'0');
+  for (let i=0;i<total;i++){
+    const b=document.createElement('button');
+    b.className='dot'; b.type='button'; b.setAttribute('aria-label',`Go to page ${i+1}`);
+    b.addEventListener('click',()=>show(i)); dots.appendChild(b);
+  }
+  function show(index){
+    current = Math.max(0,Math.min(total-1,index));
+    img.classList.add('changing');
+    const nextSrc=`assets/page-${pad(current+1)}.jpg`;
+    const preload=new Image();
+    preload.onload=()=>{img.src=nextSrc;img.alt=`Page ${current+1} of our love story`;img.classList.remove('changing')};
+    preload.onerror=()=>img.classList.remove('changing');
+    preload.src=nextSrc;
+    count.textContent=`${pad(current+1)} / ${pad(total)}`;
+    prev.disabled=current===0; next.disabled=current===total-1;
+    [...dots.children].forEach((d,i)=>d.setAttribute('aria-current',i===current?'true':'false'));
+  }
+  prev.addEventListener('click',()=>show(current-1));
+  next.addEventListener('click',()=>show(current+1));
+  surprise.addEventListener('click',()=>{
+    if(current<total-1) show(total-1);
+    for(let i=0;i<12;i++) setTimeout(makeHeart,i*90);
+  });
+  let startX=null;
+  document.querySelector('.page-wrap').addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});
+  document.querySelector('.page-wrap').addEventListener('touchend',e=>{
+    if(startX===null)return;const dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>45)show(current+(dx<0?1:-1));startX=null;
+  },{passive:true});
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(current+1);if(e.key==='ArrowLeft')show(current-1)});
+  function makeHeart(){
+    const h=document.createElement('span');h.className='heart';h.textContent=['♥','♡','💗'][Math.floor(Math.random()*3)];
+    h.style.left=(Math.random()*94+3)+'vw';h.style.fontSize=(16+Math.random()*20)+'px';h.style.animationDuration=(4+Math.random()*3)+'s';
+    document.body.appendChild(h);setTimeout(()=>h.remove(),7500);
+  }
+  show(0);
+})();
+</script>
+</body>
+</html>
